@@ -1,88 +1,71 @@
-//Dependencies
+// Dependencies
 import express from 'express';
-
 import { initializeApp } from "firebase/app";
-import {   getDocs, updateDoc } from
-'firebase/firestore/lite';
-import { getFirestore, collection } from
-'firebase/firestore';
-
-import { doc, setDoc } from "firebase/firestore";
+import { getDocs, setDoc, doc, collection } from 'firebase/firestore/lite';
+import { getFirestore } from 'firebase/firestore/lite';
 
 const firebaseConfig = {
-    apiKey: "AIzaSyCwprbdxlHVRYWOQ5kmAF7S1Qhl77bEU7E",
-    authDomain: "nibm-ipc.firebaseapp.com",
-    projectId: "nibm-ipc",
-    storageBucket: "nibm-ipc.appspot.com",
-    messagingSenderId: "117578133234",
-    appId: "1:117578133234:web:019c5eb67aa76585f56a6b",
-    measurementId: "G-QP112ZKY5E"
-  };
+    apiKey: "AIzaSyBMQTDFzZ0eKlR9ZS9xMnC13wLxr1hviTY",
+    authDomain: "ipccw2-e8950.firebaseapp.com",
+    projectId: "ipccw2-e8950",
+    storageBucket: "ipccw2-e8950.appspot.com",
+    messagingSenderId: "491967830403",
+    appId: "1:491967830403:web:9bf860df56ad2cf1f03eb6",
+    measurementId: "G-7SH6SNS51Y"
+};
 
 const app = initializeApp(firebaseConfig);
 const database = getFirestore(app);
 
-//Function to read DB
+// Function to read DB
 async function getCollection(db, colName) {
-const dataCol = collection(db, colName);
-const dataSnapshot = await getDocs(dataCol);
-const DataList = dataSnapshot.docs.map(doc => doc.data());
-return DataList;
+  const dataCol = collection(db, colName);
+  const dataSnapshot = await getDocs(dataCol);
+  const DataList = dataSnapshot.docs.map(doc => doc.data());
+  return DataList;
 }
 
-//Function to write to DB
-async function addToCollection(db, colName) {
-
-    const data = {
-        stringExample: 'Hello, World!',
-        booleanExample: true,
-        numberExample: 3.14159265,
-        dateExample: new Date('December 10, 1815'),
-        arrayExample: [5, true, 'hello'],
-        nullExample: null,
-        objectExample: {
-          a: 5,
-          b: true
-        }
-    };
-
-    const UUID = (new Date()).getTime();
-    await setDoc(doc(db, colName, UUID.toString()), data);
-}
-
-//Function to write an object to DB
+// Function to write an object to DB
 async function addDataToCollection(db, colName, data) {
-    const UUID = (new Date()).getTime();
-    await setDoc(doc(db, colName, UUID.toString()), data);
+  const UUID = (new Date()).getTime();
+  await setDoc(doc(db, colName, UUID.toString()), data);
 }
 
 const api = express();
 api.use(express.json());
-//Handling Get request for / URI
+
+// Handling Get request for / URI
 api.get('/', (req, res) => {
-    res.send('Express App Running');
+  res.send('Express App Running');
 });
 
-//Handling record temp
-api.post('/recordTemp', (req, res) => {
-    const sensorReading = req.query.temp || 0;
-    const id = req.query.ID
-    const data = {
-        Reading : sensorReading,
-        SensorID : id,
-        createdAt : new Date()
-    }
-    addDataToCollection(database, "TempData", data).then(
-        value => {res.send("Done");}
-    ).catch(
-        err => {
-            res.send("Error writing to DB, Please check the API log for more details");
-            console.log(err);
-        }
-    )
+// Handling record temp
+api.post('/recordGPS', async (req, res) => {
+    const Car_latitude = req.query.lat || 0;
+    const Car_longitude = req.query.long || 0;
+    const id = req.query.ID;
+  
+  if (id === undefined) {
+    res.send("Error: SensorID is required");
+    return;
+  }
+
+  const data = {
+    latitude: Car_latitude,
+    longitude: Car_longitude,
+    SensorID: id,
+    createdAt: new Date()
+  };
+
+  try {
+    await addDataToCollection(database, "sensor_data", data);
+    res.send("Done");
+  } catch (err) {
+    res.send("Error writing to DB, Please check the API log for more details");
+    console.log(err);
+  }
 });
 
-//Deploying the listener
+// Deploying the listener
 const port = process.env.PORT || 8080;
-api.listen(port, () => console.log(`Express server listening on port
-${port}`));
+api.listen(port, () => console.log(`Express server listening on port ${port}`));
