@@ -40,10 +40,18 @@ api.get('/', (req, res) => {
 });
 
 // Handling record temp
-api.post('/recordGPS', async (req, res) => {
+api.post('/recordGPS', async (req, res) => {    
     const Car_latitude = req.query.lat || 0;
     const Car_longitude = req.query.long || 0;
     const id = req.query.ID;
+
+    const Car_acceleration_x = req.query.acceX;
+    const Car_acceleration_y = req.query.acceY;
+    const Car_acceleration_z = req.query.acceZ;
+
+    const Car_rotation_x = req.query.rotX;
+    const Car_rotation_y = req.query.rotY;
+    const Car_rotation_z = req.query.rotZ;
   
   if (id === undefined) {
     res.send("Error: SensorID is required");
@@ -53,6 +61,12 @@ api.post('/recordGPS', async (req, res) => {
   const data = {
     latitude: Car_latitude,
     longitude: Car_longitude,
+    acceleration_X: Car_acceleration_x,
+    acceleration_Y: Car_acceleration_y,
+    acceleration_Z: Car_acceleration_z,
+    rotation_X :Car_rotation_x,
+    rotation_Y :Car_rotation_y,
+    rotation_Z :Car_rotation_z,
     SensorID: id,
     createdAt: new Date()
   };
