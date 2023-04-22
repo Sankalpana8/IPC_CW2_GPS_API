@@ -45,13 +45,13 @@ api.post('/recordGPS', async (req, res) => {
     const Car_longitude = req.query.long || 0;
     const id = req.query.ID;
 
-    const Car_acceleration_x = req.query.acceX;
-    const Car_acceleration_y = req.query.acceY;
-    const Car_acceleration_z = req.query.acceZ;
+    const Car_acceleration_x = req.query.acceX || 0;
+    const Car_acceleration_y = req.query.acceY || 0;
+    const Car_acceleration_z = req.query.acceZ || 0;
 
-    const Car_rotation_x = req.query.rotX;
-    const Car_rotation_y = req.query.rotY;
-    const Car_rotation_z = req.query.rotZ;
+    const Car_rotation_x = req.query.rotX || 0;
+    const Car_rotation_y = req.query.rotY || 0;
+    const Car_rotation_z = req.query.rotZ || 0;
   
   if (id === undefined) {
     res.send("Error: SensorID is required");
