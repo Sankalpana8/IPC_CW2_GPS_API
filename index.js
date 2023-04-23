@@ -40,10 +40,13 @@ api.get('/', (req, res) => {
 });
 
 // Handling record temp
-api.post('/recordGPS', async (req, res) => {    
+api.post('/recordGPS', async (req, res) => {  
+  
+    const id = req.query.ID;
+
     const Car_latitude = req.query.lat || 0;
     const Car_longitude = req.query.long || 0;
-    const id = req.query.ID;
+    const Car_speed = req.query.Speed;
 
     const Car_acceleration_x = req.query.acceX;
     const Car_acceleration_y = req.query.acceY;
@@ -59,20 +62,21 @@ api.post('/recordGPS', async (req, res) => {
   }
 
   const data = {
+    car_ID: id,
     latitude: Car_latitude,
     longitude: Car_longitude,
+    Speed: Car_speed,
     acceleration_X: Car_acceleration_x,
     acceleration_Y: Car_acceleration_y,
     acceleration_Z: Car_acceleration_z,
     rotation_X :Car_rotation_x,
     rotation_Y :Car_rotation_y,
-    rotation_Z :Car_rotation_z,
-    SensorID: id,
+    rotation_Z :Car_rotation_z,    
     createdAt: new Date()
   };
 
   try {
-    await addDataToCollection(database, "sensor_data", data);
+    await addDataToCollection(database, "car_data", data);
     res.send("Done");
   } catch (err) {
     res.send("Error writing to DB, Please check the API log for more details");
